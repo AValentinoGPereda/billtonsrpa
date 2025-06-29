@@ -1,8 +1,10 @@
-import { obtenerUsuarios } from './UsuarioModelo.js'
+import { buscarPorUsuario } from './UsuarioModelo'
 
-export function validarCredenciales(usuarioBuscado, contraseñaBuscada) {
-  const usuarios = obtenerUsuarios()
-  return usuarios.find(
-    (u) => u.usuario === usuarioBuscado && u.contraseña === contraseñaBuscada
-  ) || null
+/**
+ * Valida credenciales: busca usuario y compara contraseña.
+ */
+export async function validarCredenciales(usuario, contraseña) {
+  const u = await buscarPorUsuario(usuario)
+  if (!u || u.contraseña !== contraseña) return null
+  return u
 }

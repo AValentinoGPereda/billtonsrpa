@@ -1,11 +1,12 @@
-// src/controllers/UsuarioControlador.js
-import { crearUsuario, obtenerUsuarios } from '@models/UsuarioModelo'
+import {
+  crearUsuario,
+  obtenerUsuarios
+} from '@models/UsuarioModelo'
 
-export function registrarUsuario(datos) {
-  // Aquí podrías añadir validaciones adicionales o hashing de contraseña
+export async function registrarUsuario(datos) {
   return crearUsuario(datos)
 }
 
-export function listarUsuarios() {
+export async function listarUsuarios() {
   return obtenerUsuarios()
 }

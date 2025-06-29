@@ -1,11 +1,10 @@
 // src/controllers/ClienteControlador.js
 import { crearCliente, obtenerClientes } from '@models/ClienteModelo'
 
-/** Envuelve el modelo para manejar errores */
-export function registrarCliente(datos) {
+export async function registrarCliente(datos) {
   return crearCliente(datos)
 }
 
-export function listarClientes() {
+export async function listarClientes() {
   return obtenerClientes()
 }
