@@ -58,7 +58,12 @@ export default function VerInventarioPage() {
                 </td>
                 <td className="p-2">{m.ubicacion}</td>
                 <td className="p-2 space-x-2">
-                  <button disabled className="text-blue-600">✏️</button>
+                  <Link
+                    href={`/inventario/editar?codigo=${encodeURIComponent(m.codigo)}`}
+                    className="text-blue-600"
+                  >
+                    ✏️
+                  </Link>
                   <button disabled className="text-red-600">🗑️</button>
                 </td>
               </tr>

@@ -1,7 +1,18 @@
 // src/controllers/InventarioControlador.js
-import { obtenerMateriales } from '@models/InventarioModelo'
+import {
+  obtenerMateriales,
+  obtenerMaterialPorCodigo,
+  actualizarMaterial
+} from '@models/InventarioModelo'
 
-/** Listar inventario, con búsqueda opcional */
 export function listarInventario(filtro) {
   return obtenerMateriales(filtro)
+}
+
+export function verMaterial(codigo) {
+  return obtenerMaterialPorCodigo(codigo)
+}
+
+export function editarMaterial(datos) {
+  return actualizarMaterial(datos)
 }
