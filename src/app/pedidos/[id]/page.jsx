@@ -1,54 +1,65 @@
+//src\app\pedidos\[id]\page.jsx
 'use client'
 import { useEffect, useState } from 'react'
-import { useRouter, useParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
+import Link from 'next/link'
 
 export default function DetallePedidoPage() {
   const { id } = useParams()
-  const [pedido, setPedido] = useState(null)
-  const [error, setError] = useState('')
+  const [p, setP] = useState(null)
+  const [err, setErr] = useState('')
 
   useEffect(() => {
     fetch(`/api/pedidos/${id}`)
-      .then(r => r.json())
-      .then(data => {
-        if (data.error) setError(data.error)
-        else setPedido(data)
+      .then(r=>r.json())
+      .then(data=>{
+        if(data.error) setErr(data.error)
+        else setP(data)
       })
   }, [id])
 
-  if (error) return <p className="p-6 text-red-500">{error}</p>
-  if (!pedido) return <p className="p-6">Cargando…</p>
+  if(err) return <p className="p-6 text-red-500">{err}</p>
+  if(!p) return <p className="p-6">Cargando…</p>
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex justify-center">
-      <div className="bg-white p-6 shadow-md rounded w-full max-w-lg">
-        <h2 className="text-2xl font-semibold mb-4">Detalle del Pedido</h2>
-        <ul className="space-y-2">
-          {Object.entries({
-            'Número de Pedido': pedido.idPed,
-            'id_Cli.': pedido.idCli,
-            Prenda: pedido.prenda,
-            Modelo: pedido.modelo,
-            Tallas: pedido.tallas,
-            Cantidad: pedido.cantidad,
-            'Tipo de entrega': pedido.tipoEntrega,
-            'Fecha entrega': pedido.fechaEntrega,
-          }).map(([label, val]) => (
-            <li key={label} className="flex justify-between">
-              <span className="font-medium">{label}</span>
-              <span>{val}</span>
-            </li>
-          ))}
-        </ul>
+    <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-semibold mb-4 text-center">Pedido #{p.id}</h2>
+      <ul className="space-y-2">
+        <li><strong>Cliente:</strong> {p.clienteId}</li>
+        <li><strong>Tipo:</strong> {p.tipo}</li>
+        <li><strong>Entrega:</strong> {new Date(p.fechaEntrega).toLocaleDateString()}</li>
+        <li><strong>Estado:</strong> {p.estado}</li>
+      </ul>
 
-        <div className="mt-4">
-          <h3 className="font-medium mb-1">Detall. del Cliente</h3>
-          <div className="bg-gray-100 p-3 rounded">{pedido.detalleCliente}</div>
-        </div>
-        <div className="mt-4">
-          <h3 className="font-medium mb-1">Detall. de confección</h3>
-          <div className="bg-gray-100 p-3 rounded">{pedido.detalleConfeccion}</div>
-        </div>
+      <h3 className="mt-4 font-medium">Detalles de Prenda</h3>
+      <table className="w-full mt-2">
+        <thead className="bg-gray-100">
+          <tr>
+            {['Modelo','Talla','Cantidad'].map(h=>(
+              <th key={h} className="p-2 text-left text-gray-700">{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {p.detalles.map(d=>(
+            <tr key={d.id} className="border-t">
+              <td className="p-2">{d.modelo}</td>
+              <td className="p-2">{d.talla}</td>
+              <td className="p-2">{d.cantidad}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="mt-4 flex space-x-2">
+        <Link href={`/pedidos/${id}/salida`}
+          className="bg-blue-600 text-white px-4 py-2 rounded">Salida</Link>
+        <Link href={`/pedidos/${id}/devoluciones`}
+          className="bg-red-600 text-white px-4 py-2 rounded">Devoluciones</Link>
+        <Link href={`/pedidos/${id}/calidad`}
+          className="bg-yellow-500 text-white px-4 py-2 rounded">Calidad</Link>
+        <Link href={`/pedidos/${id}/asignar-materiales`}
+          className="bg-green-600 text-white px-4 py-2 rounded">Asignar Materiales</Link>
       </div>
     </div>
   )

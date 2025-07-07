@@ -1,10 +1,9 @@
 // src/app/api/pedidos/[id]/route.js
 import { NextResponse } from 'next/server'
-import { verPedido } from '@controllers/PedidoControlador'
+import { obtenerPedidoDetalle } from '@/controllers/PedidoControlador.js'
 
 export async function GET(request, { params }) {
-  const { id } = params
-  const pedido = verPedido(id)
+  const pedido = await obtenerPedidoDetalle(params.id)
   if (!pedido) {
     return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 })
   }

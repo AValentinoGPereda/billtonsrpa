@@ -1,3 +1,4 @@
+//src\app\pedidos\asignados\[id]\page.jsx
 'use client'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'

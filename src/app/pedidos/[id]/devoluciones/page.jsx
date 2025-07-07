@@ -5,133 +5,75 @@ import { useParams } from 'next/navigation'
 
 export default function DevolucionesPage() {
   const { id } = useParams()
-  const [historial, setHistorial] = useState([])
+  const [hist, setHist] = useState([])
   const [form, setForm] = useState({
-    cliente:'', tipoPrenda:'', modelo:'', talla:'', motivo:'', accion:''
+    clienteId:'', modelo:'', defecto:'', cantidad:'', accion:''
   })
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+  const [msg, setMsg] = useState({ err:'', ok:'' })
 
-  useEffect(() => {
+  useEffect(()=>{
     fetch(`/api/pedidos/${id}/devoluciones`)
-      .then(r => r.json())
-      .then(setHistorial)
-  }, [id])
+      .then(r=>r.json())
+      .then(setHist)
+  },[id])
 
-  function handleChange(e) {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
-    setError(''); setSuccess('')
+  function hC(e) {
+    setForm({ ...form, [e.target.name]: e.target.value })
+    setMsg({ err:'', ok:'' })
   }
 
-  async function handleSubmit() {
-    const faltan = Object.entries(form).filter(([k,v])=>!v)
-    if (faltan.length) {
-      setError('Complete todos los campos')
-      return
-    }
+  async function onCreate() {
     const res = await fetch(`/api/pedidos/${id}/devoluciones`, {
       method:'POST',
       headers:{
-        'Content-Type':'application/json',
-        'x-total-esperado':  Number(prompt('Total de prendas del pedido'))
+        'Content-Type':'application/json'
       },
-      body: JSON.stringify(form)
+      body: JSON.stringify({
+        ...form,
+        clienteId: Number(form.clienteId),
+        cantidad: Number(form.cantidad)
+      })
     })
-    const data = await res.json()
-    if (!res.ok) setError(data.error)
+    const d = await res.json()
+    if (!res.ok) setMsg({ err:d.error, ok:'' })
     else {
-      setSuccess('Devolución registrada')
-      setHistorial(prev => [data, ...prev])
-      setForm({ cliente:'', tipoPrenda:'', modelo:'', talla:'', motivo:'', accion:'' })
-    }
-  }
-
-  async function handleRectificar(idDev) {
-    const res = await fetch(`/api/pedidos/${id}/devoluciones`, {
-      method:'PUT',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ idDevolucion: idDev })
-    })
-    const data = await res.json()
-    if (res.ok) {
-      setHistorial(h => h.map(x=> x.id===data.id?data:x))
+      setHist([d, ...hist])
+      setMsg({ err:'', ok:'Devolución creada ✔️' })
     }
   }
 
   return (
-    <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-6">
-      <h1 className="text-2xl font-bold text-center text-blue-900 mb-4">
-        Devoluciones Pedido {id}
-      </h1>
+    <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-semibold mb-4">Devoluciones Pedido #{id}</h2>
+      {msg.err && <p className="text-red-600">{msg.err}</p>}
+      {msg.ok && <p className="text-green-600">{msg.ok}</p>}
 
-      <div className="space-y-3 mb-6">
-        {error && <p className="text-red-600">{error}</p>}
-        {success && <p className="text-green-600">{success}</p>}
+      {['clienteId','modelo','defecto','cantidad','accion'].map(f=>(
+        <div key={f} className="mb-3">
+          <label className="block mb-1 capitalize">{f}</label>
+          <input name={f}
+            value={form[f]}
+            onChange={hC}
+            type={f==='cantidad'?'number':'text'}
+            className="w-full border px-2 py-1 rounded"
+          />
+        </div>
+      ))}
 
-        {['cliente','tipoPrenda','modelo','talla','motivo','accion'].map(field => (
-          <div key={field}>
-            <label className="block text-gray-700">
-              {field === 'tipoPrenda' ? 'Tipo de Prenda'
-               : field === 'accion' ? 'Acción (reparar/retrabajar/descarte)'
-               : field.charAt(0).toUpperCase()+field.slice(1)}
-            </label>
-            <input
-              name={field}
-              value={form[field]}
-              onChange={handleChange}
-              className="w-full border px-3 py-2 rounded focus:outline-none"
-            />
-          </div>
-        ))}
+      <button onClick={onCreate}
+        className="w-full bg-red-600 text-white py-2 rounded">Registrar</button>
 
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-blue-600 text-white py-2 rounded shadow"
-        >
-          Guardar Devolución
-        </button>
-      </div>
-
-      <h2 className="text-xl font-semibold text-gray-800 mb-3">
-        Historial de Devoluciones
-      </h2>
-      <ul className="space-y-2 max-h-80 overflow-auto">
-        {historial.length === 0 && (
-          <li className="text-gray-500">Sin devoluciones registradas.</li>
-        )}
-        {historial.map(d => (
-          <li key={d.id} className="border p-4 rounded-lg bg-gray-50">
-            <div className="flex justify-between mb-1">
-              <span className="text-gray-600 text-sm">
-                {new Date(d.fecha).toLocaleString()}
-              </span>
-              {d.alerta && (
-                <span className="text-red-700 font-semibold">¡Alerta!</span>
-              )}
-              <span className={`text-sm font-medium ${
-                d.estado === 'RECTIFICADO'
-                  ? 'text-green-700'
-                  : 'text-orange-600'
-              }`}>
-                {d.estado}
-              </span>
+      <h3 className="mt-6 font-medium">Historial</h3>
+      <ul className="space-y-2 mt-2 max-h-60 overflow-auto">
+        {hist.map(d=>(
+          <li key={d.id} className="border p-3 rounded bg-gray-50">
+            <div className="flex justify-between">
+              <span>{new Date(d.fechaDevolucion).toLocaleString()}</span>
+              <span>{d.accion}</span>
             </div>
-            <div className="grid grid-cols-2 gap-4 text-gray-800 mb-2">
-              <div><strong>Cliente:</strong> {d.cliente}</div>
-              <div><strong>Prenda:</strong> {d.tipoPrenda}</div>
-              <div><strong>Modelo:</strong> {d.modelo}</div>
-              <div><strong>Talla:</strong> {d.talla}</div>
+            <div className="mt-1">
+              <strong>Modelo:</strong> {d.modelo} — <strong>Cantidad:</strong> {d.cantidad}
             </div>
-            <div className="mb-2"><strong>Motivo:</strong> {d.motivo}</div>
-            <div className="mb-2"><strong>Acción:</strong> {d.accion}</div>
-            {d.estado === 'RECTIFICACIÓN PENDIENTE' && (
-              <button
-                onClick={()=> handleRectificar(d.id)}
-                className="bg-green-600 text-white px-3 py-1 rounded"
-              >
-                Marcar como rectificado
-              </button>
-            )}
           </li>
         ))}
       </ul>

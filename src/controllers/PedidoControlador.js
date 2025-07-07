@@ -1,24 +1,23 @@
 // src/controllers/PedidoControlador.js
-
 import {
   crearPedido,
-  obtenerPedidos,
-  obtenerPedidoPorId
-} from '@models/PedidoModelo'
+  listarPedidos,
+  listarPedidosAsignados,
+  verPedido
+} from '@/models/PedidoModelo.js'
 
-export function registrarPedido(datos) {
-  return crearPedido(datos)
+export async function registrarPedido(datos) {
+  return await crearPedido(datos)
 }
 
-export function listarPedidos() {
-  return obtenerPedidos()
+export async function obtenerTodosPedidos() {
+  return await listarPedidos()
 }
 
-export function verPedido(idPed) {
-  return obtenerPedidoPorId(idPed)
+export async function obtenerPedidosAsignados() {
+  return await listarPedidosAsignados()
 }
 
-/** NUEVA: solo los pedidos en estado "Producción" */
-export function listarPedidosAsignados() {
-  return obtenerPedidos().filter(p => p.estadoPed === 'Producción')
+export async function obtenerPedidoDetalle(id) {
+  return await verPedido(id)
 }

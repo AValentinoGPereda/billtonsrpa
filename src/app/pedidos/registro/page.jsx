@@ -1,98 +1,109 @@
+//src\app\pedidos\registro\page.jsx
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function RegistroPedidoPage() {
   const [form, setForm] = useState({
-    idCli:'', prenda:'', modelo:'', tallas:'', cantidad:'', tipoEntrega:'Tienda', fechaEntrega:'', detalleCliente:'', detalleConfeccion:''
+    clienteId:'', tipo:'', fechaEntrega:'', detalles:[{ modelo:'', talla:'', cantidad:'' }],
+    detalleCliente:'', detalleConfeccion:''
   })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const router = useRouter()
 
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value })
+  function handleChange(e, idx, field) {
+    if (field && idx != null) {
+      const nuevos = [...form.detalles]
+      nuevos[idx][field] = e.target.value
+      setForm({ ...form, detalles: nuevos })
+    } else {
+      setForm({ ...form, [e.target.name]: e.target.value })
+    }
     setError(''); setSuccess(false)
   }
 
   async function handleSubmit(e) {
     e.preventDefault()
-    const res = await fetch('/api/pedidos/registro', {
-      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(form)
+    const payload = {
+      clienteId: Number(form.clienteId),
+      tipo: form.tipo,
+      fechaEntrega: form.fechaEntrega,
+      detalles: form.detalles.map(d => ({
+        modelo:d.modelo, talla:d.talla, cantidad:Number(d.cantidad)
+      })),
+      detalleCliente: form.detalleCliente,
+      detalleConfeccion: form.detalleConfeccion
+    }
+    const res = await fetch('/api/pedidos', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
     })
     const data = await res.json()
     if (!res.ok) setError(data.error)
     else {
       setSuccess(true)
-      setForm({ idCli:'', prenda:'', modelo:'', tallas:'', cantidad:'', tipoEntrega:'Tienda', fechaEntrega:'', detalleCliente:'', detalleConfeccion:'' })
-      setTimeout(()=>router.push('/pedidos/lista'),1000)
+      setTimeout(()=>router.push('/pedidos/lista'), 800)
     }
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md relative">
-        <h2 className="text-2xl font-semibold mb-2 text-center">Registrar Pedido</h2>
-        <form onSubmit={handleSubmit} className="space-y-3">
-          {error && <p className="text-red-500">{error}</p>}
-          {success && <div className="absolute top-2 right-2 bg-green-50 p-3 rounded shadow">✔️ Pedido Registrado</div>}
+      <form onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-lg shadow-md w-full max-w-md space-y-4"
+      >
+        <h2 className="text-2xl font-semibold text-center">Registrar Pedido</h2>
+        {error && <p className="text-red-600">{error}</p>}
+        {success && <p className="text-green-600">Pedido creado ✔️</p>}
 
-          <div className="grid grid-cols-2 gap-4">
-            <label className="flex flex-col">
-              <span>Número de Pedido</span>
-              <input value={`PED--`} disabled className="bg-gray-100 px-2 py-1 rounded"/>
-            </label>
-            <label className="flex flex-col">
-              <span>id_Cli.</span>
-              <input name="idCli" value={form.idCli} onChange={handleChange} className="border px-2 py-1 rounded"/>
-            </label>
+        <input name="clienteId" value={form.clienteId}
+          onChange={handleChange}
+          placeholder="ID de Cliente"
+          className="w-full border px-2 py-1 rounded"
+        />
+        <input name="tipo" value={form.tipo}
+          onChange={handleChange}
+          placeholder="Tipo de Prenda"
+          className="w-full border px-2 py-1 rounded"
+        />
+        <input name="fechaEntrega" type="date" value={form.fechaEntrega}
+          onChange={handleChange}
+          className="w-full border px-2 py-1 rounded"
+        />
+
+        {form.detalles.map((d,i) => (
+          <div key={i} className="grid grid-cols-3 gap-2">
+            <input placeholder="Modelo" value={d.modelo}
+              onChange={e=>handleChange(e,i,'modelo')}
+              className="border px-2 py-1 rounded"
+            />
+            <input placeholder="Talla" value={d.talla}
+              onChange={e=>handleChange(e,i,'talla')}
+              className="border px-2 py-1 rounded"
+            />
+            <input placeholder="Cantidad" type="number" value={d.cantidad}
+              onChange={e=>handleChange(e,i,'cantidad')}
+              className="border px-2 py-1 rounded"
+            />
           </div>
+        ))}
 
-          <label className="flex flex-col">
-            <span>Prenda</span>
-            <input name="prenda" value={form.prenda} onChange={handleChange} className="border px-2 py-1 rounded"/>
-          </label>
+        <textarea name="detalleCliente" value={form.detalleCliente}
+          onChange={handleChange}
+          placeholder="Detalle del Cliente"
+          className="w-full border px-2 py-1 rounded"
+        />
+        <textarea name="detalleConfeccion" value={form.detalleConfeccion}
+          onChange={handleChange}
+          placeholder="Detalle de Confección"
+          className="w-full border px-2 py-1 rounded"
+        />
 
-          <label className="flex flex-col">
-            <span>Modelo</span>
-            <input name="modelo" value={form.modelo} onChange={handleChange} className="border px-2 py-1 rounded"/>
-          </label>
-
-          <label className="flex flex-col">
-            <span>Tallas</span>
-            <input name="tallas" value={form.tallas} onChange={handleChange} className="border px-2 py-1 rounded"/>
-          </label>
-
-          <label className="flex flex-col">
-            <span>Cantidad</span>
-            <input name="cantidad" type="number" value={form.cantidad} onChange={handleChange} className="border px-2 py-1 rounded"/>
-          </label>
-
-          <label className="flex flex-col">
-            <span>Tipo de entrega</span>
-            <select name="tipoEntrega" value={form.tipoEntrega} onChange={handleChange} className="border px-2 py-1 rounded">
-              <option>Tienda</option><option>Domicilio</option>
-            </select>
-          </label>
-
-          <label className="flex flex-col">
-            <span>Fecha entrega</span>
-            <input name="fechaEntrega" type="date" value={form.fechaEntrega} onChange={handleChange} className="border px-2 py-1 rounded"/>
-          </label>
-
-          <label className="flex flex-col">
-            <span>Detall. del Cliente</span>
-            <textarea name="detalleCliente" value={form.detalleCliente} onChange={handleChange} className="border px-2 py-1 rounded"/>
-          </label>
-
-          <label className="flex flex-col">
-            <span>Detall. de confección</span>
-            <textarea name="detalleConfeccion" value={form.detalleConfeccion} onChange={handleChange} className="border px-2 py-1 rounded"/>
-          </label>
-
-          <button type="submit" className="w-full bg-green-600 text-white py-2 rounded">Registrar Pedido</button>
-        </form>
-      </div>
+        <button type="submit"
+          className="w-full bg-green-600 text-white py-2 rounded"
+        >Registrar Pedido</button>
+      </form>
     </div>
   )
 }

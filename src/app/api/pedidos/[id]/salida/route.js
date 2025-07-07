@@ -1,25 +1,28 @@
 // src/app/api/pedidos/[id]/salida/route.js
 import { NextResponse } from 'next/server'
-import { crearSalida, listarSalidasPedido } from '@/controllers/SalidaControlador'
+import {
+  crearSalida,    // suponiendo que tienes funciones en SalidaControlador
+  listarSalidas   // y en tu modelo SaleModel
+} from '@/controllers/SalidaControlador.js'
 
 export async function GET(request, { params }) {
-  const lista = listarSalidasPedido(params.id)
+  const lista = listarSalidas(Number(params.id))
   return NextResponse.json(lista)
 }
 
 export async function POST(request, { params }) {
   try {
-    const { destino, responsable, cantidad } = await request.json()
-    if (!destino || !responsable || isNaN(Number(cantidad))) {
-      throw new Error('Destino, responsable y cantidad son obligatorios')
+    const { destino, responsableId, cantidad } = await request.json()
+    if (!destino || !responsableId || !cantidad) {
+      throw new Error('Datos de salida incompletos')
     }
-    const nueva = crearSalida({
-      pedidoId: params.id,
+    const salida = crearSalida({
+      pedidoId: Number(params.id),
       destino,
-      responsable,
-      cantidad: Number(cantidad)
+      responsableId,
+      cantidad
     })
-    return NextResponse.json(nueva, { status: 201 })
+    return NextResponse.json(salida, { status: 201 })
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 400 })
   }

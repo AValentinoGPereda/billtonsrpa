@@ -1,14 +1,14 @@
+// src/app/api/pedidos/[id]/asignar-materiales/route.js
 import { NextResponse } from 'next/server'
 import {
   listarDisponibles,
-  crearAsignacion,
-  historialAsignaciones
-} from '@controllers/AsignacionMaterialControlador'
+  historialAsignaciones,
+  crearAsignacion
+} from '@/controllers/AsignacionMaterialControlador.js'
 
 export async function GET(request, { params }) {
-  // Listar materiales + historial juntos
   const disponibles = listarDisponibles()
-  const historial = historialAsignaciones(params.id)
+  const historial = historialAsignaciones(Number(params.id))
   return NextResponse.json({ disponibles, historial })
 }
 
@@ -16,10 +16,10 @@ export async function POST(request, { params }) {
   try {
     const { asignaciones } = await request.json()
     if (!Array.isArray(asignaciones) || asignaciones.length === 0) {
-      throw new Error('Lista de asignaciones vacía')
+      throw new Error('No hay asignaciones válidas')
     }
-    const registro = crearAsignacion(params.id, asignaciones)
-    return NextResponse.json({ mensaje: 'Materiales asignados', registro })
+    const registro = crearAsignacion(Number(params.id), asignaciones)
+    return NextResponse.json(registro, { status: 201 })
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 400 })
   }
