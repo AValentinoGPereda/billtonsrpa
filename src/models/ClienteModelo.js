@@ -1,23 +1,16 @@
 // src/models/ClienteModelo.js
+import prisma from '@/lib/prisma.js'
 
-// Aquí simulamos una “tabla” en memoria
-
-
-/**
- * Crea un cliente si no existe duplicado.
- */
-import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
-
-/** Crea un cliente si no existe duplicado. */
-export async function crearCliente({ nombre, correo, celular }) {
-  // Esto lanzará un error si `correo` es UNIQUE en la DB
+/** Crea un cliente (lanza error si correo duplicado) */
+export function crearCliente({ nombre, apellido, correo, celular }) {
   return prisma.cliente.create({
-    data: { nombre, correo, celular }
+    data: { nombre, apellido, correo, celular }
   })
 }
 
-/** Devuelve todos los clientes */
-export async function obtenerClientes() {
-  return prisma.cliente.findMany()
+/** Devuelve todos los clientes, ordenados por ID asc */
+export function obtenerClientes() {
+  return prisma.cliente.findMany({
+    orderBy: { id: 'asc' }
+  })
 }

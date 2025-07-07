@@ -1,0 +1,16 @@
+// src/lib/prisma.js
+import { PrismaClient } from '@prisma/client'
+
+let prisma
+
+if (process.env.NODE_ENV === 'production') {
+  prisma = new PrismaClient()
+} else {
+  // En dev, evita múltiples instancias
+  if (!global.__prisma) {
+    global.__prisma = new PrismaClient()
+  }
+  prisma = global.__prisma
+}
+
+export default prisma

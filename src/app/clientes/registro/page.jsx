@@ -1,10 +1,11 @@
+// src/app/clientes/registro/page.jsx
 'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function RegistroClientePage() {
-  const [form, setForm] = useState({ nombre: '', correo: '', celular: '' })
+  const [form, setForm] = useState({ nombre: '', apellido: '', correo: '', celular: '' })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const router = useRouter()
@@ -17,18 +18,18 @@ export default function RegistroClientePage() {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    const res = await fetch('/api/clientes/registro', {
+    const res = await fetch('/api/clientes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form)
     })
     const data = await res.json()
+
     if (!res.ok) {
       setError(data.error)
     } else {
       setSuccess(true)
-      setForm({ nombre: '', correo: '', celular: '' })
-      // Opcional: redirigir a la lista tras 1s
+      setForm({ nombre: '', apellido: '', correo: '', celular: '' })
       setTimeout(() => router.push('/clientes/lista'), 1000)
     }
   }

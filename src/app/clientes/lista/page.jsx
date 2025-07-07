@@ -1,3 +1,4 @@
+// src/app/clientes/lista/page.jsx
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -6,11 +7,18 @@ import Link from 'next/link'
 export default function ListaClientesPage() {
   const [clientes, setClientes] = useState([])
 
-  useEffect(() => {
-    fetch('/api/clientes/registro')
-      .then(res => res.json())
-      .then(setClientes)
-  }, [])
+useEffect(() => {
+  fetch('/api/clientes')
+    .then(res => res.json())
+    .then(data => {
+      if (Array.isArray(data)) {
+        setClientes(data)
+      } else {
+        console.error('API clientes devolvió:', data)
+        setClientes([])
+      }
+    })
+}, [])
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
