@@ -1,10 +1,19 @@
-import { buscarPorUsuario } from './UsuarioModelo'
+// src/models/AutenticacionModelo.js
+import prisma from '@/lib/prisma.js'
 
 /**
- * Valida credenciales: busca usuario y compara contraseña.
+ * Intenta autenticar un trabajador por correo y contraseña.
  */
-export async function validarCredenciales(usuario, contraseña) {
-  const u = await buscarPorUsuario(usuario)
-  if (!u || u.contraseña !== contraseña) return null
-  return u
+export async function autenticarTrabajador({ usuario, contraseña }) {
+  // AHORA buscamos por correo, no por apellido
+  const trabajador = await prisma.trabajador.findUnique({
+    where: { correo: usuario }
+  })
+  if (!trabajador) return null
+
+  // Aquí compararías el hash; por ahora texto plano
+  if (trabajador.contrasenia !== contraseña) {
+    return null
+  }
+  return trabajador
 }

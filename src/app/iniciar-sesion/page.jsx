@@ -1,4 +1,6 @@
+// src/app/iniciar-sesion/page.jsx
 'use client'
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -14,16 +16,25 @@ export default function IniciarSesionPage() {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    const res = await fetch('/api/usuarios/iniciar-sesion', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form)
-    })
-    const data = await res.json()
-    if (!res.ok) {
-      setError(data.error)
-    } else {
-      router.push('/dashboard')
+    setError('')
+
+    try {
+      const res = await fetch('/api/usuarios/iniciar-sesion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      })
+      // Si la respuesta no trae JSON válido, `await res.json()` lanzará
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || 'Error al procesar la petición')
+      } else {
+        router.push('/dashboard')
+      }
+    } catch (networkErr) {
+      console.error(networkErr)
+      setError('No se pudo conectar al servidor.')
     }
   }
 
@@ -34,7 +45,7 @@ export default function IniciarSesionPage() {
         {error && <p className="text-red-500 mb-3">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block mb-1">Usuario</label>
+            <label className="block mb-1">Usuario (email)</label>
             <input
               name="usuario"
               value={form.usuario}

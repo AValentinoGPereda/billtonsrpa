@@ -1,5 +1,6 @@
-import { validarCredenciales } from '@models/AutenticacionModelo'
+// src/controllers/AutenticacionControlador.js
+import { autenticarTrabajador } from '@/models/AutenticacionModelo.js'
 
-export async function iniciarSesion({ usuario, contraseña }) {
-  return validarCredenciales(usuario, contraseña)
+export async function iniciarSesion(datos) {
+  return await autenticarTrabajador(datos)
 }

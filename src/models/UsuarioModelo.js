@@ -1,27 +1,33 @@
 // src/models/UsuarioModelo.js
+import prisma from '@/lib/prisma.js'
 
-/** 
- * Aquí pondrías tu lógica de base de datos (Prisma, mssql, etc.). 
- * Por ahora simulamos la inserción.
+/**
+ * Registra un trabajador usando rol_id
+ * @param {{ nombre:string, usuario:string, email:string, contraseña:string, rol:string }} datos
  */
-import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
+export async function crearTrabajador({ nombre, usuario, email, contraseña, rol }) {
+  // Buscamos el role_id
+  const rolRegistro = await prisma.role.findUnique({
+    where: { nombre: rol }
+  })
+  if (!rolRegistro) {
+    throw new Error(`Rol "${rol}" no encontrado`)
+  }
 
-/** Crea un usuario; lanzará si usuario o email ya existen */
-export async function crearUsuario({ nombre, usuario, email, contraseña, rol }) {
-  return prisma.usuario.create({
-    data: { nombre, usuario, email, contraseña, rol }
+  // Creamos al trabajador
+  return prisma.trabajador.create({
+    data: {
+      nombre,
+      apellido: usuario,      // “usuario” en front viene del apellido
+      correo: email,
+      contrasenia: contraseña,
+      rol_id: rolRegistro.id,
+      grupo_id: null           // si de momento no asignas grupo
+    }
   })
 }
 
-/** Lista todos los usuarios */
-export async function obtenerUsuarios() {
-  return prisma.usuario.findMany()
-}
-
-/** Busca usuario por nombre de usuario */
-export async function buscarPorUsuario(usuarioBuscado) {
-  return prisma.usuario.findUnique({
-    where: { usuario: usuarioBuscado }
-  })
+/** Lista todos los trabajadores (opcional) */
+export function obtenerTrabajadores() {
+  return prisma.trabajador.findMany()
 }

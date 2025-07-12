@@ -1,38 +1,38 @@
 // src/models/SalidaModelo.js
-
-import { actualizarMaterial } from './InventarioModelo'
-
-// Almacenaje en memoria
-const salidas = []
+import prisma from '@/lib/prisma.js'
 
 /**
- * Crea un registro de salida:
- * - descuenta stock de cada pedido (ejemplo: asumimos pedido.cantidad)
- * @param {{ pedidoId:string, destino:string, responsable:string, cantidad:number }} datos
+ * Registra una nueva salida en la tabla billtons.salidas_pedidos.
+ * @param {{ pedidoId: number, destino: string, responsableId?: number, cantidad: number }} datos
  */
-export function registrarSalida({ pedidoId, destino, responsable, cantidad }) {
-  const fecha = new Date().toISOString()
-  // Aquí descontarías del inventario (simplificado)
-  // actualizarMaterial(...) …
-
-  const salida = {
-    id: salidas.length + 1,
-    pedidoId,
-    fecha,
-    destino,
-    responsable,
-    cantidad
+export function registrarSalida({ pedidoId, destino, responsableId, cantidad }) {
+  if (!pedidoId || !destino || cantidad == null) {
+    throw new Error('pedidoId, destino y cantidad son obligatorios')
   }
-  salidas.push(salida)
-  return salida
+  return prisma.salidaPedido.create({
+    data: {
+      pedidoId: Number(pedidoId),
+      destino,
+      responsableId: responsableId ? Number(responsableId) : null,
+      cantidad: Number(cantidad)
+    }
+  })
 }
 
-/** Devuelve todas las salidas */
+/** Devuelve todas las salidas ordenadas por fecha_salida descendente */
 export function obtenerSalidas() {
-  return salidas
+  return prisma.salidaPedido.findMany({
+    orderBy: { fechaSalida: 'desc' }
+  })
 }
 
-/** Devuelve las salidas de un pedido */
+/**
+ * Devuelve todas las salidas de un pedido específico.
+ * @param {number} pedidoId
+ */
 export function obtenerSalidasPorPedido(pedidoId) {
-  return salidas.filter(s => s.pedidoId === pedidoId)
+  return prisma.salidaPedido.findMany({
+    where: { pedidoId: Number(pedidoId) },
+    orderBy: { fechaSalida: 'desc' }
+  })
 }
