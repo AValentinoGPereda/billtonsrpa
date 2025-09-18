@@ -6,20 +6,34 @@ import { useParams } from 'next/navigation'
 export default function DetallePedidoAsignadoPage() {
   const { id } = useParams()
   const [pedido, setPedido] = useState(null)
+  const [clientes, setClientes] = useState([])
   const [error, setError] = useState('')
 
   useEffect(() => {
-    fetch(`/api/pedidos/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) setError(data.error)
-        else setPedido(data)
-      })
-      .catch(() => setError('Error al cargar el pedido'))
+    async function fetchData() {
+      try {
+        const [pedidoRes, clientesRes] = await Promise.all([
+          fetch(`/api/pedidos/${id}`),
+          fetch('/api/clientes')
+        ])
+        const pedidoData = await pedidoRes.json()
+        const clientesData = await clientesRes.json()
+        if (pedidoData.error) setError(pedidoData.error)
+        else {
+          setPedido(pedidoData)
+          setClientes(clientesData)
+        }
+      } catch {
+        setError('Error al cargar datos')
+      }
+    }
+    fetchData()
   }, [id])
 
   if (error) return <p className="p-6 text-red-500">{error}</p>
   if (!pedido) return <p className="p-6">Cargando…</p>
+
+  const cliente = clientes.find(c => c.id === pedido.idCli)
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 flex justify-center">
@@ -28,7 +42,7 @@ export default function DetallePedidoAsignadoPage() {
         <ul className="space-y-2">
           {Object.entries({
             'Número de Pedido': pedido.idPed,
-            'id_Cli.': pedido.idCli,
+            'Cliente': cliente ? `${cliente.nombre} ${cliente.apellido}` : `ID ${pedido.idCli}`,
             Prenda: pedido.prenda,
             Modelo: pedido.modelo,
             Tallas: pedido.tallas,

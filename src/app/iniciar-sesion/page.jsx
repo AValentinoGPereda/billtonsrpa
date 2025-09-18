@@ -30,7 +30,7 @@ export default function IniciarSesionPage() {
       if (!res.ok) {
         setError(data.error || 'Error al procesar la petición')
       } else {
-        router.push('/dashboard')
+        router.push('/pedidos/lista')
       }
     } catch (networkErr) {
       console.error(networkErr)
@@ -41,26 +41,26 @@ export default function IniciarSesionPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="bg-white p-6 rounded shadow w-full max-w-sm">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Inicie Sesión</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-center text-blue-900">Inicie Sesión</h2>
         {error && <p className="text-red-500 mb-3">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block mb-1">Usuario (email)</label>
+            <label className="block mb-1 text-blue-900">Usuario (email)</label>
             <input
               name="usuario"
               value={form.usuario}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border px-3 py-2 rounded text-blue-900"
             />
           </div>
           <div>
-            <label className="block mb-1">Contraseña</label>
+            <label className="block mb-1 text-blue-900">Contraseña</label>
             <input
               name="contraseña"
               type="password"
               value={form.contraseña}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border px-3 py-2 rounded text-blue-900"
             />
           </div>
           <button

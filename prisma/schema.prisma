@@ -64,6 +64,8 @@ model Pedido {
   fechaEntrega   DateTime                   @map("fecha_entrega") @db.Date
   estado         String                     @db.VarChar(50)
   grupoId        Int?                       @map("grupo_id")
+  detalle_cliente    String?                    @map("detalle_cliente") @db.VarChar(500) 
+  detalle_confeccion String?                    @map("detalle_confeccion") @db.VarChar(500)
   asignaciones   AsignacionMaterialPedido[]
   controlCalidad ControlCalidad[]
   detalles       DetallePedido[]

@@ -1,59 +1,101 @@
-'use client'
-import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+// src/app/inventario/editar/page.jsx
+"use client";
 
-export default function EditarInventarioPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const codigo = searchParams.get('codigo') || ''
-  const [form, setForm] = useState({ codigo:'', nombre:'', stock:'', ubicacion:'' })
-  const [mensaje, setMensaje] = useState('')
+import { useEffect, useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-  // Precarga al montar
+function EditarInventarioContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id') || '';
+  const [form, setForm] = useState({
+    id: '',
+    nombre: '',
+    tipo: '',
+    cantidad: '',
+    umbral: '',
+    color: '',
+    ubicacion: ''
+  });
+  const [mensaje, setMensaje] = useState('');
+
   useEffect(() => {
-    if (!codigo) {
-      setMensaje('Código no proporcionado')
-      return
+    if (!id) {
+      setMensaje('ID no proporcionado');
+      return;
     }
-    fetch(`/api/inventario?q=${codigo}`)
-      .then(r => r.json())
-      .then(lista => {
-        const mat = lista.find(m => m.codigo === codigo)
-        if (!mat) setMensaje('Material no encontrado')
-        else setForm(mat)
+    
+    // Hacer la solicitud con el parámetro id
+    fetch(`/api/inventario?id=${id}`)
+      .then(r => {
+        if (!r.ok) {
+          throw new Error('Error al obtener el material');
+        }
+        return r.json();
       })
-  }, [codigo])
+      .then(material => {
+        if (!material) {
+          setMensaje('Material no encontrado');
+        } else {
+          setForm({
+            id: material.id,
+            nombre: material.nombre,
+            tipo: material.tipo,
+            cantidad: material.cantidad.toString(),
+            umbral: material.umbral.toString(),
+            color: material.color || '',
+            ubicacion: material.ubicacion || ''
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        setMensaje('Error al cargar el material');
+      });
+  }, [id]);
 
   function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value })
-    setMensaje('')
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setMensaje('');
   }
 
   async function guardar() {
-    const res = await fetch('/api/inventario', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form)
-    })
-    const data = await res.json()
-    if (!res.ok) setMensaje(data.error)
-    else setMensaje('✔️ Actualización exitosa')
+    try {
+      const res = await fetch('/api/inventario', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...form,
+          cantidad: parseInt(form.cantidad),
+          umbral: parseInt(form.umbral)
+        })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) {
+        setMensaje(data.error);
+      } else {
+        setMensaje('✔️ Actualización exitosa');
+      }
+    } catch (e) {
+      setMensaje('Error de conexión');
+    }
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-sm">
-        <h2 className="text-xl font-bold mb-4 text-center">Editar Materiales</h2>
-        {mensaje && <p className="text-sm text-red-500 mb-2">{mensaje}</p>}
+      <div className="bg-white p-6 rounded shadow-md w-full max-w-sm text-blue-900">
+        <h2 className="text-xl font-bold mb-4 text-center text-blue-900">Editar Material</h2>
+        {mensaje && <p className="text-sm text-red-500 mb-2 text-blue-900">{mensaje}</p>}
 
         <div className="space-y-3">
           <div>
-            <label className="block">Código</label>
+            <label className="block">ID</label>
             <input
-              name="codigo"
-              value={form.codigo}
+              name="id"
+              value={form.id}
               disabled
-              className="w-full border bg-gray-100 px-2 py-1 rounded"
+              className="w-full border bg-gray-100 px-2 py-1 rounded text-blue-900"
             />
           </div>
           <div>
@@ -62,16 +104,45 @@ export default function EditarInventarioPage() {
               name="nombre"
               value={form.nombre}
               onChange={handleChange}
-              className="w-full border px-2 py-1 rounded"
+              className="w-full border px-2 py-1 rounded text-blue-900"
             />
           </div>
           <div>
-            <label className="block">Stock</label>
+            <label className="block">Tipo</label>
             <input
-              name="stock"
-              value={form.stock}
+              name="tipo"
+              value={form.tipo}
               onChange={handleChange}
-              className="w-full border px-2 py-1 rounded"
+              className="w-full border px-2 py-1 rounded text-blue-900"
+            />
+          </div>
+          <div>
+            <label className="block">Cantidad</label>
+            <input
+              name="cantidad"
+              type="number"
+              value={form.cantidad}
+              onChange={handleChange}
+              className="w-full border px-2 py-1 rounded text-blue-900"
+            />
+          </div>
+          <div>
+            <label className="block">Umbral</label>
+            <input
+              name="umbral"
+              type="number"
+              value={form.umbral}
+              onChange={handleChange}
+              className="w-full border px-2 py-1 rounded text-blue-900"
+            />
+          </div>
+          <div>
+            <label className="block">Color</label>
+            <input
+              name="color"
+              value={form.color}
+              onChange={handleChange}
+              className="w-full border px-2 py-1 rounded text-blue-900"
             />
           </div>
           <div>
@@ -80,7 +151,7 @@ export default function EditarInventarioPage() {
               name="ubicacion"
               value={form.ubicacion}
               onChange={handleChange}
-              className="w-full border px-2 py-1 rounded"
+              className="w-full border px-2 py-1 rounded text-blue-900"
             />
           </div>
           <button
@@ -92,5 +163,17 @@ export default function EditarInventarioPage() {
         </div>
       </div>
     </div>
-  )
+  );
+}
+
+export default function EditarInventarioPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        Cargando...
+      </div>
+    }>
+      <EditarInventarioContent />
+    </Suspense>
+  );
 }

@@ -29,12 +29,12 @@ export default function ListaSalidasPage() {
           <tbody>
             {salidas.length > 0 ? salidas.map(s => (
               <tr key={s.id} className="border-b last:border-0">
-                <td className="p-4">{s.id}</td>
-                <td className="p-4">{s.pedidoId}</td>
-                <td className="p-4">{new Date(s.fechaSalida).toLocaleString()}</td>
-                <td className="p-4">{s.destino}</td>
-                <td className="p-4">{s.responsableId ?? '—'}</td>
-                <td className="p-4">{s.cantidad}</td>
+                <td className="p-4 text-blue-900">{s.id}</td>
+                <td className="p-4 text-blue-900">{s.pedidoId}</td>
+                <td className="p-4 text-blue-900">{new Date(s.fechaSalida).toLocaleString()}</td>
+                <td className="p-4 text-blue-900">{s.destino}</td>
+                <td className="p-4 text-blue-900">{s.responsableId ?? '—'}</td>
+                <td className="p-4 text-blue-900">{s.cantidad}</td>
               </tr>
             )) : (
               <tr>

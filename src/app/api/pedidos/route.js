@@ -13,16 +13,28 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json()
-    // validaciones mínimas
-    const { clienteId, tipo, fechaEntrega, detalles } = body
+    
+    // Extrae todos los campos necesarios
+    const { clienteId, tipo, fechaEntrega, detalles, detalleCliente, detalleConfeccion } = body
+    
+    // Validaciones
     if (!clienteId || !tipo || !fechaEntrega || !Array.isArray(detalles) || detalles.length === 0) {
       return NextResponse.json({ error: 'Campos obligatorios faltantes' }, { status: 400 })
     }
-    const nuevo = await registrarPedido(body)
+    
+    // Pasa todos los campos al controlador
+    const nuevo = await registrarPedido({
+      clienteId,
+      tipo,
+      fechaEntrega,
+      detalles,
+      detalleCliente: detalleCliente || "No tiene detalles adicionales",
+      detalleConfeccion: detalleConfeccion || "Sin estampado"
+    })
+    
     return NextResponse.json(nuevo, { status: 201 })
   } catch (e) {
     console.error('[POST /api/pedidos]', e)
     return NextResponse.json({ error: e.message }, { status: 500 })
   }
 }
-

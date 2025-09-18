@@ -93,14 +93,14 @@ export default function RegistroUsuarioPage() {
             value={form.nombre}
             onChange={handleChange}
             placeholder="Nombre"
-            className="w-full border-b py-1 focus:outline-none"
+            className="w-full border-b py-1 focus:outline-none text-blue-900"
           />
           <input
             name="usuario"
             value={form.usuario}
             onChange={handleChange}
             placeholder="Apellido (Usuario)"
-            className="w-full border-b py-1 focus:outline-none"
+            className="w-full border-b py-1 focus:outline-none text-blue-900"
           />
           <input
             name="email"
@@ -108,7 +108,7 @@ export default function RegistroUsuarioPage() {
             value={form.email}
             onChange={handleChange}
             placeholder="Email"
-            className="w-full border-b py-1 focus:outline-none"
+            className="w-full border-b py-1 focus:outline-none text-blue-900"
           />
           <input
             name="contraseña"
@@ -116,7 +116,7 @@ export default function RegistroUsuarioPage() {
             value={form.contraseña}
             onChange={handleChange}
             placeholder="Contraseña"
-            className="w-full border-b py-1 focus:outline-none"
+            className="w-full border-b py-1 focus:outline-none text-blue-900"
           />
           <input
             name="confirmar"
@@ -124,14 +124,14 @@ export default function RegistroUsuarioPage() {
             value={form.confirmar}
             onChange={handleChange}
             placeholder="Confirmar Contraseña"
-            className="w-full border-b py-1 focus:outline-none"
+            className="w-full border-b py-1 focus:outline-none text-blue-900"
           />
 
           <select
             name="rol"
             value={form.rol}
             onChange={handleChange}
-            className="w-full border px-2 py-1 rounded"
+            className="w-full border px-2 py-1 rounded text-blue-900"
           >
             {roles.map(r => (
               <option key={r.id} value={r.nombre}>

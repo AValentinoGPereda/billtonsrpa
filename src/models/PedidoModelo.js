@@ -1,12 +1,8 @@
 // src/models/PedidoModelo.js
+
 import prisma from '@/lib/prisma.js'
 
-/**
- * Crea un pedido + nested detalles
- * @param {{ clienteId:number, tipo:string, fechaEntrega:string, grupoId?:number|null,
- *            detalles:Array<{modelo:string,talla:string,cantidad:number}>,
- *            detalleCliente?:string, detalleConfeccion?:string }}
- */
+
 export function crearPedido({
   clienteId,
   tipo,
@@ -30,9 +26,8 @@ export function crearPedido({
           cantidad: d.cantidad
         }))
       },
-      // columnas extras asumidas en tu DDL:
-      detalle_cliente: detalleCliente,
-      detalle_confeccion: detalleConfeccion
+      detalle_cliente: detalleCliente || 'No tiene detalles adicionales',
+      detalle_confeccion: detalleConfeccion || 'Sin estampado'
     },
     include: {
       detalles: true

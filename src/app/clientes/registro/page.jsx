@@ -57,7 +57,14 @@ export default function RegistroClientePage() {
             value={form.nombre}
             onChange={handleChange}
             placeholder="Nombre"
-            className="w-full border-b border-gray-400 focus:outline-none py-1"
+            className="w-full border-b border-gray-400 focus:outline-none py-1 text-blue-900"
+          />
+                    <input
+            name="apellido"
+            value={form.apellido}
+            onChange={handleChange}
+            placeholder="Apellido"
+            className="w-full border-b border-gray-400 focus:outline-none py-1 text-blue-900"
           />
           <input
             name="correo"
@@ -65,14 +72,14 @@ export default function RegistroClientePage() {
             value={form.correo}
             onChange={handleChange}
             placeholder="Email"
-            className="w-full border-b border-gray-400 focus:outline-none py-1"
+            className="w-full border-b border-gray-400 focus:outline-none py-1 text-blue-900"
           />
           <input
             name="celular"
             value={form.celular}
             onChange={handleChange}
             placeholder="Celular"
-            className="w-full border-b border-gray-400 focus:outline-none py-1"
+            className="w-full border-b border-gray-400 focus:outline-none py-1 text-blue-900"
           />
 
           <button

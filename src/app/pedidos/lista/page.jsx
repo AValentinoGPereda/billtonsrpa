@@ -19,7 +19,7 @@ export default function ListaPedidosPage() {
           Lista de Pedidos
         </h1>
         <Link href="/pedidos/registro"
-          className="bg-green-600 text-white px-4 py-2 rounded"
+          className="bg-green-600 text-white px-4 py-2 rounded "
         >Nuevo Pedido</Link>
       </div>
 
@@ -37,11 +37,11 @@ export default function ListaPedidosPage() {
           <tbody>
             {pedidos.length>0 ? pedidos.map(p=>(
               <tr key={p.id} className="border-b">
-                <td className="p-4">{p.id}</td>
-                <td className="p-4">{p.clienteId}</td>
-                <td className="p-4">{p.tipo}</td>
-                <td className="p-4">{new Date(p.fechaEntrega).toLocaleDateString()}</td>
-                <td className="p-4">
+                <td className="p-4 text-blue-900">{p.id}</td>
+                <td className="p-4 text-blue-900">{p.cliente ? `${p.cliente.nombre} ${p.cliente.apellido}` : 'Sin cliente'}</td>
+                <td className="p-4 text-blue-900">{p.tipo}</td>
+                <td className="p-4 text-blue-900">{new Date(p.fechaEntrega).toLocaleDateString()}</td>
+                <td className="p-4 text-blue-900">
                   <span className={`px-3 py-1 rounded-full text-white text-sm ${
                     p.estado==='Producción'?'bg-yellow-500':
                     p.estado==='Despachado'?'bg-green-600':'bg-red-500'}`}>

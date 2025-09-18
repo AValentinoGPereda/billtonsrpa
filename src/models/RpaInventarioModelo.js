@@ -1,5 +1,5 @@
 // src/models/RpaInventarioModelo.js
-import fs from 'fs'
+/*import fs from 'fs'
 import path from 'path'
 import xlsx from 'xlsx'
 import { Client } from 'pg'
@@ -86,3 +86,4 @@ export async function ejecutarRpa() {
   await pg.end()
   return { actualizado: excel.length, bajos: materialesBajos.length }
 }
+*/

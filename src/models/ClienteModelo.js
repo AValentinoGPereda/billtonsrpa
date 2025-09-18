@@ -14,3 +14,18 @@ export function obtenerClientes() {
     orderBy: { id: 'asc' }
   })
 }
+
+/** Actualiza un cliente por ID */
+export function actualizarCliente(id, datos) {
+  return prisma.cliente.update({
+    where: { id: Number(id) },
+    data: datos
+  })
+}
+
+/** Elimina un cliente por ID */
+export function eliminarCliente(id) {
+  return prisma.cliente.delete({
+    where: { id: Number(id) }
+  })
+}
