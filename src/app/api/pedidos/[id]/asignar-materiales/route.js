@@ -4,23 +4,52 @@ import {
   listarDisponibles,
   historialAsignaciones,
   crearAsignacion
-} from '@/controllers/AsignacionMaterialControlador.js'
+} from '@/controllers/AsignacionMaterialControlador'
 
 export async function GET(request, { params }) {
-  const disponibles = listarDisponibles()
-  const historial = historialAsignaciones(Number(params.id))
-  return NextResponse.json({ disponibles, historial })
+  try {
+    console.log('🔍 Solicitando materiales para pedido:', params.id)
+    
+    const [disponibles, historial] = await Promise.all([
+      listarDisponibles(),
+      historialAsignaciones(Number(params.id))
+    ])
+    
+    console.log('📦 Materiales disponibles:', disponibles)
+    console.log('📋 Historial encontrado:', historial)
+    
+    return NextResponse.json({ 
+      disponibles, 
+      historial 
+    })
+  } catch (error) {
+    console.error('❌ Error en GET asignar-materiales:', error)
+    return NextResponse.json(
+      { error: 'Error interno del servidor' }, 
+      { status: 500 }
+    )
+  }
 }
 
 export async function POST(request, { params }) {
   try {
     const { asignaciones } = await request.json()
+    
     if (!Array.isArray(asignaciones) || asignaciones.length === 0) {
-      throw new Error('No hay asignaciones válidas')
+      return NextResponse.json(
+        { error: 'No hay asignaciones válidas' }, 
+        { status: 400 }
+      )
     }
-    const registro = crearAsignacion(Number(params.id), asignaciones)
+
+    const registro = await crearAsignacion(Number(params.id), asignaciones)
     return NextResponse.json(registro, { status: 201 })
-  } catch (e) {
-    return NextResponse.json({ error: e.message }, { status: 400 })
+    
+  } catch (error) {
+    console.error('❌ Error en POST asignar-materiales:', error)
+    return NextResponse.json(
+      { error: error.message }, 
+      { status: 400 }
+    )
   }
 }

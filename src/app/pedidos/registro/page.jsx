@@ -12,12 +12,11 @@ export default function RegistroPedidoPage() {
     detalleCliente: '',
     detalleConfeccion: ''
   })
-  const [clientes, setClientes] = useState([]) // lista desde la API
+  const [clientes, setClientes] = useState([])
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const router = useRouter()
-
-  // 🔹 Cargar clientes al inicio
+  
   useEffect(() => {
     async function fetchClientes() {
       try {
@@ -102,13 +101,7 @@ export default function RegistroPedidoPage() {
         {error && <p className="text-red-600">{error}</p>}
         {success && <p className="text-green-600">Pedido creado ✔️</p>}
 
-        {/* 🔹 ComboBox de clientes */}
-        <select
-          name="clienteId"
-          value={form.clienteId}
-          onChange={handleChange}
-          className="w-full border px-2 py-1 rounded text-blue-900"
-        >
+        <select name="clienteId" value={form.clienteId} onChange={handleChange} className="w-full border px-2 py-1 rounded text-blue-900" >
           <option value="">-- Seleccione cliente --</option>
           {clientes.map(c => (
             <option key={c.id} value={c.id}>
@@ -117,66 +110,23 @@ export default function RegistroPedidoPage() {
           ))}
         </select>
 
-        <input
-          name="tipo"
-          value={form.tipo}
-          onChange={handleChange}
-          placeholder="Tipo de Prenda"
-          className="w-full border px-2 py-1 rounded text-blue-900"
-        />
+        <input name="tipo" value={form.tipo} onChange={handleChange} placeholder="Tipo de Prenda" className="w-full border px-2 py-1 rounded text-blue-900" />
 
-        <input
-          name="fechaEntrega"
-          type="date"
-          value={form.fechaEntrega}
-          onChange={handleChange}
-          className="w-full border px-2 py-1 rounded text-blue-900"
-        />
+        <input name="fechaEntrega" type="date" value={form.fechaEntrega} onChange={handleChange} className="w-full border px-2 py-1 rounded text-blue-900" />
 
         {(form.detalles || []).map((d, i) => (
           <div key={i} className="grid grid-cols-3 gap-2">
-            <input
-              placeholder="Modelo"
-              value={d.modelo}
-              onChange={e => handleChange(e, i, 'modelo')}
-              className="border px-2 py-1 rounded text-blue-900"
-            />
-            <input
-              placeholder="Talla"
-              value={d.talla}
-              onChange={e => handleChange(e, i, 'talla')}
-              className="border px-2 py-1 rounded text-blue-900"
-            />
-            <input
-              placeholder="Cantidad"
-              type="number"
-              value={d.cantidad}
-              onChange={e => handleChange(e, i, 'cantidad')}
-              className="border px-2 py-1 rounded text-blue-900"
-            />
+            <input placeholder="Modelo" value={d.modelo} onChange={e => handleChange(e, i, 'modelo')} className="border px-2 py-1 rounded text-blue-900" />
+            <input placeholder="Talla" value={d.talla} onChange={e => handleChange(e, i, 'talla')} className="border px-2 py-1 rounded text-blue-900" />
+            <input placeholder="Cantidad" type="number" value={d.cantidad} onChange={e => handleChange(e, i, 'cantidad')} className="border px-2 py-1 rounded text-blue-900" />
           </div>
         ))}
 
-        <textarea
-          name="detalleCliente"
-          value={form.detalleCliente}
-          onChange={handleChange}
-          placeholder="Detalle del Cliente"
-          className="w-full border px-2 py-1 rounded text-blue-900"
-        />
+        <textarea name="detalleCliente" value={form.detalleCliente} onChange={handleChange} placeholder="Detalle del Cliente" className="w-full border px-2 py-1 rounded text-blue-900" />
 
-        <textarea
-          name="detalleConfeccion"
-          value={form.detalleConfeccion}
-          onChange={handleChange}
-          placeholder="Detalle de Confección"
-          className="w-full border px-2 py-1 rounded text-blue-900"
-        />
+        <textarea name="detalleConfeccion" value={form.detalleConfeccion} onChange={handleChange} placeholder="Detalle de Confección" className="w-full border px-2 py-1 rounded text-blue-900" />
 
-        <button
-          type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded"
-        >
+        <button type="submit" className="w-full bg-green-600 text-white py-2 rounded" >
           Registrar Pedido
         </button>
       </form>

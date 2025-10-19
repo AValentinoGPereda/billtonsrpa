@@ -21,7 +21,6 @@ export async function POST(request) {
     return NextResponse.json({ mensaje: 'Trabajador registrado', usuario: nuevo }, { status: 201 })
 
   } catch (e) {
-    // Si el error viene del modelo (rol no existe o duplicado), devolvemos 400/409
     const status = e.message.includes('no encontrado') ? 400 : 409
     return NextResponse.json({ error: e.message }, { status })
   }

@@ -14,15 +14,12 @@ export async function POST(request) {
   try {
     const body = await request.json()
     
-    // Extrae todos los campos necesarios
     const { clienteId, tipo, fechaEntrega, detalles, detalleCliente, detalleConfeccion } = body
     
-    // Validaciones
     if (!clienteId || !tipo || !fechaEntrega || !Array.isArray(detalles) || detalles.length === 0) {
       return NextResponse.json({ error: 'Campos obligatorios faltantes' }, { status: 400 })
     }
     
-    // Pasa todos los campos al controlador
     const nuevo = await registrarPedido({
       clienteId,
       tipo,

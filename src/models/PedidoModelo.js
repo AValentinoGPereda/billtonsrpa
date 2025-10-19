@@ -2,7 +2,6 @@
 
 import prisma from '@/lib/prisma.js'
 
-
 export function crearPedido({
   clienteId,
   tipo,

@@ -24,7 +24,6 @@ export default function IniciarSesionPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       })
-      // Si la respuesta no trae JSON válido, `await res.json()` lanzará
       const data = await res.json()
 
       if (!res.ok) {

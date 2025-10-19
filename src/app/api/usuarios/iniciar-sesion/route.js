@@ -11,7 +11,6 @@ export async function POST(request) {
         { status: 400 }
       )
     }
-
     const user = await iniciarSesion({ usuario, contraseña })
     if (!user) {
       return NextResponse.json(
@@ -19,8 +18,6 @@ export async function POST(request) {
         { status: 401 }
       )
     }
-
-    // Retornamos solo lo necesario
     return NextResponse.json(
       {
         mensaje: 'Inicio de sesión exitoso',
@@ -29,7 +26,6 @@ export async function POST(request) {
       { status: 200 }
     )
   } catch (e) {
-    // Nunca respondas HTML ni dejes que el error salte sin JSON
     return NextResponse.json(
       { error: 'Error interno: ' + e.message },
       { status: 500 }

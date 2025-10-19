@@ -13,10 +13,17 @@ export default function ListaClientesPage() {
     correo: '',
     celular: ''
   })
+  const [notificacion, setNotificacion] = useState({ mostrar: false, mensaje: '', tipo: '' })
+  const [modalConfirmacion, setModalConfirmacion] = useState({ mostrar: false, clienteId: null, clienteNombre: '' })
 
   useEffect(() => {
     cargarClientes()
   }, [])
+
+  const mostrarNotificacion = (mensaje, tipo = 'exito') => {
+    setNotificacion({ mostrar: true, mensaje, tipo })
+    setTimeout(() => setNotificacion({ mostrar: false, mensaje: '', tipo: '' }), 3000)
+  }
 
   const cargarClientes = () => {
     fetch('/api/clientes')
@@ -31,25 +38,40 @@ export default function ListaClientesPage() {
       })
   }
 
-  const handleEliminar = (id) => {
-    if (confirm('¿Estás seguro de que deseas eliminar este cliente?')) {
-      fetch(`/api/clientes/${id}`, {
+  const solicitarEliminacion = (id, nombre, apellido) => {
+    setModalConfirmacion({
+      mostrar: true,
+      clienteId: id,
+      clienteNombre: `${nombre} ${apellido}`
+    })
+  }
+
+  const confirmarEliminacion = () => {
+    if (modalConfirmacion.clienteId) {
+      fetch(`/api/clientes/${modalConfirmacion.clienteId}`, {
         method: 'DELETE'
       })
       .then(res => res.json())
       .then(data => {
         if (data.error) {
-          alert('Error al eliminar: ' + data.error)
+          mostrarNotificacion('Error al eliminar: ' + data.error, 'error')
         } else {
-          alert('Cliente eliminado correctamente')
-          cargarClientes() // Recargar la lista
+          mostrarNotificacion('Cliente eliminado correctamente')
+          cargarClientes()
         }
       })
       .catch(error => {
         console.error('Error:', error)
-        alert('Error al eliminar cliente')
+        mostrarNotificacion('Error al eliminar cliente', 'error')
+      })
+      .finally(() => {
+        setModalConfirmacion({ mostrar: false, clienteId: null, clienteNombre: '' })
       })
     }
+  }
+
+  const cancelarEliminacion = () => {
+    setModalConfirmacion({ mostrar: false, clienteId: null, clienteNombre: '' })
   }
 
   const iniciarEdicion = (cliente) => {
@@ -91,21 +113,62 @@ export default function ListaClientesPage() {
     .then(res => res.json())
     .then(data => {
       if (data.error) {
-        alert('Error al actualizar: ' + data.error)
+        mostrarNotificacion('Error al actualizar: ' + data.error, 'error')
       } else {
-        alert('Cliente actualizado correctamente')
+        mostrarNotificacion('Cliente actualizado correctamente')
         setEditando(null)
-        cargarClientes() // Recargar la lista
+        cargarClientes()
       }
     })
     .catch(error => {
       console.error('Error:', error)
-      alert('Error al actualizar cliente')
+      mostrarNotificacion('Error al actualizar cliente', 'error')
     })
   }
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
+      {/* Notificación personalizada */}
+      {notificacion.mostrar && (
+        <div className={`fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 ${
+          notificacion.tipo === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+        }`}>
+          {notificacion.mensaje}
+          <button 
+            onClick={() => setNotificacion({ mostrar: false, mensaje: '', tipo: '' })}
+            className="ml-4 font-bold"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* Modal de confirmación de eliminación */}
+      {modalConfirmacion.mostrar && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Confirmar eliminación</h3>
+            <p className="text-gray-600 mb-6">
+              ¿Estás seguro de que deseas eliminar al cliente <strong>{modalConfirmacion.clienteNombre}</strong>?
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={cancelarEliminacion}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmarEliminacion}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold text-blue-900">Lista de Clientes</h1>
         <Link
@@ -120,7 +183,7 @@ export default function ListaClientesPage() {
         <table className="w-full">
           <thead className="bg-gray-200">
             <tr>
-              <th className="p-2 text-left text-blue-900">ID</th>
+              
               <th className="p-2 text-left text-blue-900">Nombre</th>
               <th className="p-2 text-left text-blue-900">Apellido</th>
               <th className="p-2 text-left text-blue-900">Correo</th>
@@ -131,7 +194,7 @@ export default function ListaClientesPage() {
           <tbody>
             {clientes.map(c => (
               <tr key={c.id} className="border-t">
-                <td className="p-2 text-blue-900">{c.id}</td>
+                
                 
                 {editando === c.id ? (
                   <>
@@ -204,7 +267,7 @@ export default function ListaClientesPage() {
                         ✏️
                       </button>
                       <button 
-                        onClick={() => handleEliminar(c.id)}
+                        onClick={() => solicitarEliminacion(c.id, c.nombre, c.apellido)}
                         className="text-red-600"
                       >
                         🗑️

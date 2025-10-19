@@ -1,18 +1,12 @@
 // src/app/api/inventario/route.js
 import { NextResponse } from 'next/server'
-import {
-  listarInventario,
-  verMaterial, // Asegúrate de importar verMaterial
-  editarMaterial,
-  registrarMaterial
-} from '@controllers/InventarioControlador'
+import {  listarInventario,  verMaterial,   editarMaterial,  registrarMaterial} from '@controllers/InventarioControlador'
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const filtro = searchParams.get('q') || ''
-  const id = searchParams.get('id') // Nuevo: obtener el parámetro id
+  const id = searchParams.get('id') 
   
-  // Si se proporciona un ID, buscar ese material específico
   if (id) {
     try {
       const material = await verMaterial(id)
@@ -24,8 +18,7 @@ export async function GET(request) {
       return NextResponse.json({ error: e.message }, { status: 400 })
     }
   }
-  
-  // Si no hay ID, hacer la búsqueda general
+
   try {
     const lista = await listarInventario(filtro)
     return NextResponse.json(lista)
@@ -34,7 +27,6 @@ export async function GET(request) {
   }
 }
 
-// El resto de tu código PUT y POST permanece igual
 export async function PUT(request) {
   try {
     const { id, nombre, tipo, cantidad, umbral, color, ubicacion } = await request.json()

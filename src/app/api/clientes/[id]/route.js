@@ -6,15 +6,12 @@ export async function PUT(request, { params }) {
   try {
     const id = params.id
     const { nombre, apellido, correo, celular } = await request.json()
-
-    // Validación básica
     if (!nombre || !apellido || !correo || !celular) {
       return NextResponse.json(
         { error: 'Todos los campos son obligatorios' },
         { status: 400 }
       )
     }
-
     const cliente = await modificarCliente(id, { nombre, apellido, correo, celular })
     return NextResponse.json(
       { mensaje: 'Cliente actualizado', cliente },
@@ -29,7 +26,6 @@ export async function PUT(request, { params }) {
     )
   }
 }
-
 export async function DELETE(request, { params }) {
   try {
     const id = params.id
